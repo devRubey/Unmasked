@@ -19,7 +19,7 @@ function Register() {
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
-      setError(err.response?.data || 'Registration failed. Try a different username.');
+      setError(err.response?.data?.error || 'Registration failed. Try a different username.');
     }
   };
 

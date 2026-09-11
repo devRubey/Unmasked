@@ -20,7 +20,7 @@ function Login() {
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data || 'Something went wrong. Please try again.');
+      setError(err.response?.data?.error || 'Something went wrong. Please try again.'); 
     }
   };
 
