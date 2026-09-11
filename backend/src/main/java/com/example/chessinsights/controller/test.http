@@ -1,0 +1,65 @@
+POST http://localhost:8080/api/analyze-game
+Content-Type: text/plain
+
+[Event "Casual Game"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. Bxc6 dxc6 5. O-O Nxe4 6. Qe2 Nc5 7. Nc3 Qd3 *
+
+###
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "rubentest",
+  "email": "ruben@example.com",
+  "password": "mySecurePassword123"
+}
+
+###
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "rubentest",
+  "password": "mySecurePassword123"
+}
+
+###
+POST http://localhost:8080/api/analyze-game
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJydWJlbnRlc3QiLCJpYXQiOjE3ODc1MTgxMTcsImV4cCI6MTc4NzYwNDUxN30.h6JvJik_pzT62cICysuhZvyxv8nkBdQAt0mqM96SOQi4PURgmF2ke798avenyTV1
+Content-Type: text/plain
+
+[Event "Casual Game"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 *
+
+###
+POST http://localhost:8080/api/analyze-game
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJydWJlbnRlc3QiLCJpYXQiOjE3ODc1MTgxMTcsImV4cCI6MTc4NzYwNDUxN30.h6JvJik_pzT62cICysuhZvyxv8nkBdQAt0mqM96SOQi4PURgmF2ke798avenyTV1
+Content-Type: text/plain
+
+[Event "Casual Game"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 *
+
+###
+GET http://localhost:8080/api/my-games
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJydWJlbnRlc3QiLCJpYXQiOjE3ODc1MTgxMTcsImV4cCI6MTc4NzYwNDUxN30.h6JvJik_pzT62cICysuhZvyxv8nkBdQAt0mqM96SOQi4PURgmF2ke798avenyTV1
