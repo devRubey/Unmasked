@@ -3,3 +3,4 @@ target/
 node_modules/
 .env
 application-local.properties
+src/main/resources/application.properties
