@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AnalysisController {
@@ -67,6 +68,12 @@ public class AnalysisController {
         return gameRepository.findByUserId(user.getId()).stream()
                 .map(g -> new GameSummary(g.getId(), g.getPgn(), g.getAnalyzedAt()))
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @PostMapping("/api/bot-move")
+    public Map<String, String> getBotMove(@RequestBody BotMoveRequest request) throws Exception {
+        String bestMove = stockfishService.getBestMoveAtStrength(request.getFen(), request.getElo());
+        return Map.of("move", bestMove);
     }
 
     @Autowired

@@ -32,7 +32,7 @@ public class StockfishService {
         waitFor("readyok");
     }
 
-    public AnalysisResult analyze(String positionArgs, int depth) throws IOException {
+    public synchronized AnalysisResult analyze(String positionArgs, int depth) throws IOException {
         send("position " + positionArgs);
         send("go depth " + depth);
 
@@ -53,6 +53,43 @@ public class StockfishService {
         }
 
         return new AnalysisResult(lastEval, bestMove);
+    }
+
+    /**
+     * Gets the bot's move at a given difficulty (Elo strength).
+     * Pass elo >= 3000 for full-strength/"Impossible" (no limit).
+     * Always resets strength back to full afterward so analyze()
+     * is never accidentally affected by a leftover strength limit.
+     */
+    public synchronized String getBestMoveAtStrength(String fen, int elo) throws IOException {
+        if (elo >= 3000) {
+            send("setoption name UCI_LimitStrength value false");
+        } else {
+            send("setoption name UCI_LimitStrength value true");
+            send("setoption name UCI_Elo value " + elo);
+        }
+
+        send("isready");
+        waitFor("readyok");
+
+        send("position fen " + fen);
+        send("go movetime 1000"); // 1 second thinking time, smooth for gameplay
+
+        String bestMove = "";
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("bestmove")) {
+                bestMove = line.split(" ")[1];
+                break;
+            }
+        }
+
+        // Reset back to full strength so analyze()/analyze-game are unaffected
+        send("setoption name UCI_LimitStrength value false");
+        send("isready");
+        waitFor("readyok");
+
+        return bestMove;
     }
 
     @PreDestroy
