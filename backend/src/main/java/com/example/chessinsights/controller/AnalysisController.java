@@ -41,12 +41,21 @@ public class AnalysisController {
     }
 
     @PostMapping("/api/analyze-game")
-    public List<MoveAnalysis> analyzeGame(@RequestBody String pgn, Authentication authentication) throws Exception {
-        String username = authentication.getName(); // pulled from the JWT by your filter
+    public GameAnalysisResponse analyzeGame(@RequestBody String pgn, Authentication authentication) throws Exception {
+        String username = authentication.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return gameAnalysisService.analyzeGame(pgn, 12, user);
+    }
+
+    @GetMapping("/api/games/{id}")
+    public GameAnalysisResponse getGame(@PathVariable Long id, Authentication authentication) throws Exception {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return gameAnalysisService.getSavedAnalysis(id, user);
     }
 
     @GetMapping("/api/my-games")

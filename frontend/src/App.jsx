@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AnalyzeGame from './pages/AnalyzeGame';
+import GameDetail from './pages/GameDetail';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -23,6 +24,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AnalyzeGame />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/games/:id"
+        element={
+          <ProtectedRoute>
+            <GameDetail />
           </ProtectedRoute>
         }
       />

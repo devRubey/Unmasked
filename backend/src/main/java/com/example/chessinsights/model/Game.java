@@ -21,8 +21,8 @@ public class Game {
     @Column(nullable = false)
     private LocalDateTime analyzedAt;
 
-    // MongoDB document ID for this game's move-by-move analysis
-    private String analysisDocumentId;
+    @Column(columnDefinition = "TEXT")
+    private String analysisJson;
 
     public Game() {}
 
@@ -36,6 +36,6 @@ public class Game {
     public User getUser() { return user; }
     public String getPgn() { return pgn; }
     public LocalDateTime getAnalyzedAt() { return analyzedAt; }
-    public String getAnalysisDocumentId() { return analysisDocumentId; }
-    public void setAnalysisDocumentId(String analysisDocumentId) { this.analysisDocumentId = analysisDocumentId; }
+    public String getAnalysisJson() { return analysisJson; }
+    public void setAnalysisJson(String analysisJson) { this.analysisJson = analysisJson; }
 }

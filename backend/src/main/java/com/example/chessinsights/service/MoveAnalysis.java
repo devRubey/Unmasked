@@ -3,10 +3,15 @@ package com.example.chessinsights.service;
 public class MoveAnalysis {
     public int moveNumber;
     public String move;
-    public int evalBefore;   // always from White's perspective now
-    public int evalAfter;    // always from White's perspective now
-    public int swing;        // from the MOVER's own perspective - negative = bad for them
+    public int evalBefore;
+    public int evalAfter;
+    public int swing;
     public String classification;
+    public String explanation;
+    public String sanMove; // human-readable, e.g. "Qh5" - for display only
+
+    public MoveAnalysis() {
+    }
 
     public MoveAnalysis(int moveNumber, String move, int evalBefore, int evalAfter, int swing) {
         this.moveNumber = moveNumber;
@@ -15,6 +20,7 @@ public class MoveAnalysis {
         this.evalAfter = evalAfter;
         this.swing = swing;
         this.classification = classify(Math.abs(swing));
+        this.explanation = null;
     }
 
     private String classify(int absSwing) {

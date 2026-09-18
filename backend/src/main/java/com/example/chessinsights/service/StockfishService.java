@@ -41,7 +41,9 @@ public class StockfishService {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            if (line.contains("score cp")) {
+            if (line.contains("score mate")) {
+                lastEval = extractMateScore(line);
+            } else if (line.contains("score cp")) {
                 lastEval = extractScore(line);
             }
             if (line.startsWith("bestmove")) {
@@ -77,6 +79,17 @@ public class StockfishService {
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].equals("cp")) {
                 return Integer.parseInt(parts[i + 1]);
+            }
+        }
+        return 0;
+    }
+
+    private int extractMateScore(String line) {
+        String[] parts = line.split(" ");
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].equals("mate")) {
+                int mateIn = Integer.parseInt(parts[i + 1]);
+                return mateIn > 0 ? 10000 : -10000;
             }
         }
         return 0;
