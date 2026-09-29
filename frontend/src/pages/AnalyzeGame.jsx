@@ -45,6 +45,7 @@ function AnalyzeGame() {
       });
       setResults(response.data.moves);
     } catch (err) {
+      console.error("Failed to analyze game:", err);
       setError(
         "Could not analyze this game. Check your PGN format and try again.",
       );
