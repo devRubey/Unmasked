@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import apiClient from "../api/client";
@@ -41,7 +41,10 @@ function playTone(frequency, duration = 0.08, type = "sine") {
 
 function PlayBot({ onGameFinished }) {
   const gameRef = useRef(new Chess());
-  const [fen, setFen] = useState(gameRef.current.fen());
+  // Lazy initializer creates its own Chess instance rather than reading
+  // gameRef.current - both start at the same standard position, but this
+  // avoids touching the ref during render.
+  const [fen, setFen] = useState(() => new Chess().fen());
   const [difficultyIndex, setDifficultyIndex] = useState(1);
   const [playerColor, setPlayerColor] = useState("white");
   const [botThinking, setBotThinking] = useState(false);
@@ -289,23 +292,29 @@ function PlayBot({ onGameFinished }) {
     buildAndSendPgn();
   };
 
-  const checkSquareStyle = {};
-  if (gameRef.current.isCheck() && !gameOver) {
-    const board = gameRef.current.board();
-    const turnColor = gameRef.current.turn();
-    for (let rank = 0; rank < 8; rank++) {
-      for (let file = 0; file < 8; file++) {
-        const piece = board[rank][file];
-        if (piece && piece.type === "k" && piece.color === turnColor) {
-          const square = "abcdefgh"[file] + (8 - rank);
-          checkSquareStyle[square] = {
-            background:
-              "radial-gradient(circle, rgba(239,68,68,0.65) 0%, rgba(239,68,68,0.15) 70%)",
-          };
+  // Derived from `fen` (reactive state) rather than reading gameRef.current
+  // directly during render - refs aren't safe to read at render time.
+  const checkSquareStyle = useMemo(() => {
+    const style = {};
+    const g = new Chess(fen);
+    if (g.isCheck() && !gameOver) {
+      const board = g.board();
+      const turnColor = g.turn();
+      for (let rank = 0; rank < 8; rank++) {
+        for (let file = 0; file < 8; file++) {
+          const piece = board[rank][file];
+          if (piece && piece.type === "k" && piece.color === turnColor) {
+            const square = "abcdefgh"[file] + (8 - rank);
+            style[square] = {
+              background:
+                "radial-gradient(circle, rgba(239,68,68,0.65) 0%, rgba(239,68,68,0.15) 70%)",
+            };
+          }
         }
       }
     }
-  }
+    return style;
+  }, [fen, gameOver]);
 
   const squareStyles = {
     ...(highlightLastMove && lastMove
