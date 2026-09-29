@@ -1,0 +1,34 @@
+# ServiceAccount = identity for the Unmasked verification pod (not a human).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: unmasked-sa
+  namespace: default
+---
+# Role = the permission checklist. This SA can ONLY get/list secrets
+# in the default namespace - nothing else in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: secret-reader-role
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+---
+# RoleBinding = actually connects the ServiceAccount to the Role above.
+# Namespaced (not ClusterRoleBinding) so the permission can't leak to other namespaces.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: unmasked-rbac-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: unmasked-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: secret-reader-role
+  apiGroup: rbac.authorization.k8s.io
