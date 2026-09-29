@@ -124,6 +124,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Safety net: fail fast instead of hanging forever if a
+                         test tries to make a network call that never resolves
+                         (e.g. a DB connection CI has no credentials for). -->
+                    <forkedProcessTimeoutInSeconds>120</forkedProcessTimeoutInSeconds>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
