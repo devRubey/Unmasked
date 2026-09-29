@@ -15,6 +15,7 @@ function GameDetail() {
         const response = await apiClient.get(`/games/${id}`);
         setResults(response.data.moves);
       } catch (err) {
+        console.error('Failed to load game:', err);
         setError('Could not load this game.');
       } finally {
         setLoading(false);
