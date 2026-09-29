@@ -16,6 +16,7 @@ function Dashboard() {
         const response = await apiClient.get("/my-games");
         setGames(response.data);
       } catch (err) {
+        console.error("Failed to load games:", err);
         setError("Could not load your games");
       } finally {
         setLoading(false);
