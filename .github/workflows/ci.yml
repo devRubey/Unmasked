@@ -22,7 +22,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Run backend tests
-        run: mvn -B test
+        # ChessInsightsApplicationTests is excluded here specifically - it's a
+        # @SpringBootTest that boots the full app context and needs a live DB
+        # connection, which CI intentionally doesn't have (Render holds those
+        # credentials, not GitHub). The rest of the suite is pure-logic tests
+        # with no Spring context, so they run normally.
+        run: mvn -B test -Dtest='!ChessInsightsApplicationTests'
 
   frontend-build:
     runs-on: ubuntu-latest
