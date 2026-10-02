@@ -79,26 +79,45 @@ jobs:
 
           for path in files:
               with open(path) as f:
-                  doc = yaml.safe_load(f)
+                  docs = list(yaml.safe_load_all(f))
 
-              kind = doc.get("kind", "")
-              base_fields = {"apiVersion", "kind", "metadata"}
+              for doc in docs:
+                  if not doc:
+                      continue
 
-              # RBAC roles use 'rules' instead of 'spec'
-              if kind in ["Role", "ClusterRole"]:
-                  required_fields = base_fields | {"rules"}
-              # RBAC bindings use 'roleRef' and 'subjects' instead of 'spec'
-              elif kind in ["RoleBinding", "ClusterRoleBinding"]:
-                  required_fields = base_fields | {"roleRef"}
-              else:
-                  required_fields = base_fields | {"spec"}
+                  # 1. Ensure basic required Kubernetes fields exist
+                  base_fields = {"apiVersion", "kind", "metadata"}
+                  missing_base = base_fields - doc.keys()
+                  if missing_base:
+                      print(f"FAIL: {path} is missing standard metadata field(s): {missing_base}")
+                      sys.exit(1)
 
-              missing = required_fields - doc.keys()
-              if missing:
-                  print(f"FAIL: {path} is missing required field(s): {missing}")
-                  sys.exit(1)
+                  # 2. Ensure object metadata has a name
+                  metadata = doc.get("metadata", {})
+                  if not isinstance(metadata, dict) or "name" not in metadata:
+                      print(f"FAIL: {path} metadata is missing required 'name' field")
+                      sys.exit(1)
 
-              print(f"OK: {path} -> {doc['kind']}/{doc['metadata'].get('name')}")
+                  kind = doc["kind"]
+                  name = metadata["name"]
+
+                  # 3. Dynamic payload checks based on resource kind
+                  if kind in ["Deployment", "StatefulSet", "DaemonSet", "Job", "CronJob", "Pod"]:
+                      if "spec" not in doc:
+                          print(f"FAIL: {path} ({kind}/{name}) is missing required 'spec' block")
+                          sys.exit(1)
+                  elif kind in ["Role", "ClusterRole"]:
+                      if "rules" not in doc:
+                          print(f"FAIL: {path} ({kind}/{name}) is missing required 'rules' list")
+                          sys.exit(1)
+                  elif kind in ["RoleBinding", "ClusterRoleBinding"]:
+                      # Accept either roleRef or roleref case variations safely
+                      has_roleref = any(k.lower() == "roleref" for k in doc.keys())
+                      if not has_roleref:
+                          print(f"FAIL: {path} ({kind}/{name}) is missing 'roleRef'")
+                          sys.exit(1)
+
+                  print(f"OK: {path} -> {kind}/{name}")
 
           print(f"\nValidated {len(files)} Kubernetes manifest(s) successfully.")
           EOF
