@@ -1,0 +1,14 @@
+# RoleBinding = connects the ServiceAccount to the Role above.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: unmasked-rbac-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: unmasked-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: secret-reader-role
+  apiGroup: rbac.authorization.k8s.io
