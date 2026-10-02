@@ -1,0 +1,11 @@
+# Role = the permission checklist. This SA can ONLY get/list secrets
+# in the default namespace - nothing else in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: secret-reader-role
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
