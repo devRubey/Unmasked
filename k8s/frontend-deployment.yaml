@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unmasked-frontend
+  labels:
+    app: unmasked-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unmasked-frontend
+  template:
+    metadata:
+      labels:
+        app: unmasked-frontend
+    spec:
+      containers:
+        - name: unmasked-frontend
+          image: unmasked-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
