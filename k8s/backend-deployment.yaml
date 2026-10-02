@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unmasked-backend
+  labels:
+    app: unmasked-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unmasked-backend
+  template:
+    metadata:
+      labels:
+        app: unmasked-backend
+    spec:
+      containers:
+        - name: unmasked-backend
+          image: unmasked-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: unmasked-secrets
+                  key: database-url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: unmasked-secrets
+                  key: database-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: unmasked-secrets
+                  key: database-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: unmasked-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 20
